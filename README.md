@@ -1,6 +1,6 @@
 # Worker and BroadcastChannel experiment
 
-![schema](./drawing.svg "Schema of the architecture")
+![schema](https://cdn.rawgit.com/zeropaper/spike-worker-broadcast/master/drawing.svg "Schema of the architecture")
 
 
 
