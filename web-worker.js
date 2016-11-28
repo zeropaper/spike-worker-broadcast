@@ -1,17 +1,11 @@
+
+
+
 function signature(fn) {
   var args = fn.toString().match('function[^(]*\\(([^)]*)\\)');
   if (!args || !args[1].trim()) { return []; }
   return args[1].split(',').map(function(a){ return a.trim(); });
 }
-
-var commands = {};
-commands.register = function register(sent) {
-  console.info('register sent %s', sent);
-};
-commands.heartbeat = function heartbeat(index, sent) {
-  console.info('heartbeat %s sent %s', index, sent);
-  return 'boom ' + index;
-};
 
 var signatures = {};
 function registerCommand(commandName, command) {
@@ -30,12 +24,41 @@ function registerCommand(commandName, command) {
   signatures[commandName] = signature(command);
 }
 
-Object.keys(commands).forEach(registerCommand);
+
+
+
 
 var channel = new BroadcastChannel('spike');
 channel.addEventListener('message', function(evt) {
   console.info('worker channel message event', evt.data.command, evt.data.type, evt.timeStamp);
 });
+
+
+
+
+var commands = {};
+commands.register = function register(sent) {
+  console.info('register sent %s', sent);
+};
+commands.heartbeat = function heartbeat(index, totalJSHeapSize, usedJSHeapSize, sent) {
+  console.info('heartbeat %s sent %s', index, totalJSHeapSize, usedJSHeapSize, sent);
+  channel.postMessage({
+    command: 'heartbeat',
+    payload: {
+      sent: sent,
+      index: index
+    }
+  });
+  return 'boom ' + index;
+};
+
+
+Object.keys(commands).forEach(registerCommand);
+
+
+
+
+
 
 
 

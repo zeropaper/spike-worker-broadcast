@@ -1,9 +1,41 @@
 <html>
 <head>
   <title>Spike about Web Workers and Broadcastchannel API</title>
+<style type="text/css">
+.follower {
+  float: left;
+}
+
+.follower iframe {
+  border: none;
+  width: 33vmax;
+  height: 33vmax;
+}
+</style>
 </head>
 <body>
+  <h1>Controller</h1>
   <div>Check your browser console.</div>
+
+  <div id="diagram-holder"></div>
+
+  <div class="follower">
+    <h2>Follower 1</h2>
+    <iframe src="./follower.html?1"></iframe>
+  </div>
+
+  <div class="follower">
+    <h2>Follower 2</h2>
+    <iframe src="./follower.html?2"></iframe>
+  </div>
+
+  <div class="follower">
+    <h2>Follower 3</h2>
+    <iframe src="./follower.html?3"></iframe>
+  </div>
+
+
+  <script src="./svg.js"></script>
   <script src="./index.js"></script>
 </body>
 </html>
