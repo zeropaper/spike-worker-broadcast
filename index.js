@@ -23,7 +23,6 @@ controlProto.initialize = function initialize() {
 function auid() {
   return parseInt((Math.random() + '.' + performance.now()).replace(/\./g, ''), 10);
 }
-// var _eventId = 0;
 controlProto.sendCommand = function sendCommand(name, payload, callback) {
   var worker = this.worker;
   var data = {
@@ -34,7 +33,6 @@ controlProto.sendCommand = function sendCommand(name, payload, callback) {
   function makeListener(id, done) {
     function eventListener(evt) {
       if (evt.data.eventId !== id) return;
-      console.info('callback listener (%s)', id, evt.data.payload);
       done(null, evt.data.payload);
       worker.removeEventListener('message', eventListener);
     };
@@ -42,8 +40,7 @@ controlProto.sendCommand = function sendCommand(name, payload, callback) {
   }
 
   if (callback) {
-    // _eventId++;
-    data.eventId = auid();//_eventId;
+    data.eventId = auid();
     worker.addEventListener('message', makeListener(data.eventId, callback));
   }
 
@@ -60,7 +57,7 @@ var controllerObject = new ControllerObject();
 
 var _c = 0;
 var _fullfilled = 0;
-var _s = 1;//60;
+var _s = 10;
 var _ts = 0;
 var _af;
 function loop(timestamp) {
@@ -70,7 +67,6 @@ function loop(timestamp) {
   }
 
   _c++;
-  console.info('%s ............................................', _c);
   window.updateSVG('c', _c);
   controllerObject.sendCommand('heartbeat', {
     sent: performance.now(),
@@ -78,7 +74,6 @@ function loop(timestamp) {
     totalJSHeapSize: performance.memory.totalJSHeapSize,
     usedJSHeapSize: performance.memory.usedJSHeapSize
   }, function(err, payload) {
-    //console.info('fullfilled', payload);
     _fullfilled++;
     _af = requestAnimationFrame(loop);
   });
@@ -92,4 +87,4 @@ function start() {
 
   loop();
 }
-// setTimeout(start, 5000);
+document.getElementById('start').addEventListener('click', start);

@@ -11,8 +11,8 @@
     svgEl.style.maxWidth = '100%';
     svgEl.style.maxHeight = '100%';
   });
+
   window.updateSVG = function updateSVG(id, text) {
-    console.info(id, text);
     svgEl.querySelector('#__' + id + '__').textContent = text;
   };
 })();
