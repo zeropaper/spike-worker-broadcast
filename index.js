@@ -10,12 +10,8 @@ function assign(target, additions) {
  */
 
 
-function ControllerObject() {
-  this.initialize();
-}
-var controlProto = {};
-
-controlProto.initialize = function initialize() {
+var controllerMixin = {};
+controllerMixin.initializeController = function initializeController() {
   this.worker = new Worker('web-worker.js');;
 };
 
@@ -23,9 +19,9 @@ controlProto.initialize = function initialize() {
 function auid() {
   return parseInt((Math.random() + '.' + performance.now()).replace(/\./g, ''), 10);
 }
-controlProto.sendCommand = function sendCommand(name, payload, callback) {
+controllerMixin.sendCommand = function sendCommand(name, payload, callback) {
   var worker = this.worker;
-  var data = {
+  var message = {
     command: name,
     payload: payload
   };
@@ -40,18 +36,22 @@ controlProto.sendCommand = function sendCommand(name, payload, callback) {
   }
 
   if (callback) {
-    data.eventId = auid();
-    worker.addEventListener('message', makeListener(data.eventId, callback));
+    message.eventId = auid();
+    worker.addEventListener('message', makeListener(message.eventId, callback));
   }
 
-  worker.postMessage(data);
+  worker.postMessage(message);
 };
-
-assign(ControllerObject.prototype, controlProto);
 
 /**
  *
  */
+
+
+function ControllerObject() {
+  this.initializeController();
+}
+assign(ControllerObject.prototype, controllerMixin);
 
 var controllerObject = new ControllerObject();
 
@@ -60,6 +60,12 @@ var _fullfilled = 0;
 var _s = 10;
 var _ts = 0;
 var _af;
+
+var _used = document.getElementById('js-heap-size--used');
+_used.style.width = ((performance.memory.totalJSHeapSize / performance.memory.usedJSHeapSize) * 1) + '%';
+
+var _f3 = window.open('follower.html?3', 'f3', 'width=300,height=300,location=no');
+
 function loop(timestamp) {
   if (timestamp - _ts > (_s * 1000)) {
     console.info('%s calls per sec, %s% fullfilled', _c / _s, (_fullfilled / _c) * 100);
@@ -68,6 +74,7 @@ function loop(timestamp) {
 
   _c++;
   window.updateSVG('c', _c);
+  _used.style.width = ((performance.memory.totalJSHeapSize / performance.memory.usedJSHeapSize) * 1) + '%';
   controllerObject.sendCommand('heartbeat', {
     sent: performance.now(),
     index: _c,

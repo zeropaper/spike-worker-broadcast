@@ -51,14 +51,13 @@ Object.keys(commands).forEach(registerCommand);
 /**
  *
  */
-function FollowerObject() {
-  this.initialize();
-}
-var followerProto = {};
 
-followerProto.initialize = function initialize() {
+var clientMixin = {};
+clientMixin.initializeClient = function initializeClient() {
   var channel = new BroadcastChannel('spike');
   var follower = this;
+  var commandArgs
+
   channel.addEventListener('message', function(evt) {
     console.info('follower broadcast channel message event', evt.data.command, evt.data.type);
     var eventId = evt.data.eventId;
@@ -74,7 +73,7 @@ followerProto.initialize = function initialize() {
       return;
     }
 
-    var commandArgs = signatures[commandName].map(function(argName) {
+    commandArgs = signatures[commandName].map(function(argName) {
       return evt.data.payload[argName];
     });
 
@@ -84,10 +83,13 @@ followerProto.initialize = function initialize() {
 };
 
 
-assign(FollowerObject.prototype, followerProto);
-
 /**
  *
  */
+
+function FollowerObject() {
+  this.initializeClient();
+}
+assign(FollowerObject.prototype, clientMixin);
 
 var followerObject = new FollowerObject();
